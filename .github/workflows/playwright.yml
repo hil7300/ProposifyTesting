@@ -5,7 +5,7 @@ on:
     - cron: '0 16 * * 1-5'
 jobs:
 
-  Engage-test:
+  proposify:
     timeout-minutes: 150
     runs-on: 
       - self-hosted
