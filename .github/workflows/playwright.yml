@@ -17,8 +17,6 @@ jobs:
         npx playwright install --with-deps;
         npx playwright test --headed --workers 3;
         npm run create-allure-report
-
-      working-directory: ./proposify-automation-project
        
     - name: Upload artifacts
       if: always()
