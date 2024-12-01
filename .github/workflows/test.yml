@@ -1,0 +1,11 @@
+name: Simple Test
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Print hello world
+        run: echo "Hello, World!"
