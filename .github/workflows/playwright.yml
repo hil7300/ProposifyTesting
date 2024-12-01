@@ -1,27 +1,36 @@
-name: Playwright Tests
+name: Engage Playwright Tests
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 16 * * 1-5'
 jobs:
-  test:
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
+
+  Engage-test:
+    timeout-minutes: 150
+    runs-on: 
+      - self-hosted
+      - JARVIS
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Install dependencies
-      run: npm ci
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
-    - uses: actions/upload-artifact@v4
-      if: ${{ !cancelled() }}
+    - name: Navigating to the Engage playwright project, installing dependencies, and running tests
+      run: 
+        npm ci;
+        npx playwright install --with-deps;
+        npx playwright test --headed --workers 3;
+        npm run create-allure-report
+
+
+    - name: Upload artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
       with:
-        name: playwright-report
-        path: playwright-report/
+        name: test-results
+        path: |
+            ./playwright-report/*.html
+            ./playwright-report/allure-report/*.html
         retention-days: 30
+        
+
