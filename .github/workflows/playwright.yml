@@ -1,15 +1,11 @@
 name: Proposify Playwright Tests
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '0 16 * * 1-5'
 jobs:
-
-  proposify:
+  test:
     timeout-minutes: 150
     runs-on:
       - self-hosted
-      - JARVIS
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
