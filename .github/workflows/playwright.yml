@@ -1,4 +1,4 @@
-name: Engage Playwright Tests
+name: Proposify Playwright Tests
 on:
   workflow_dispatch:
   schedule:
