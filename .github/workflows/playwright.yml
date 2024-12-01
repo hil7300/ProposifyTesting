@@ -15,7 +15,7 @@ jobs:
     - uses: actions/setup-node@v4
       with:
         node-version: lts/*
-    - name: Navigating to the Engage playwright project, installing dependencies, and running tests
+    - name: Navigating to the playwright project, installing dependencies, and running tests
       run: 
         npm ci;
         npx playwright install --with-deps;
