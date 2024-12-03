@@ -4,8 +4,9 @@ import { LoginPage } from '../pages/LoginPage';
 import fs from 'fs';
 import { HomePage } from '../pages/HomePage';
 import { CreateDocumentPage } from '../pages/CreateDocumentPage';
-import { getRandomCredentials, getResourcesPath } from '../helpers';
+import { getRandomCredentials, getResourcesPath, loginToProposifyUsingAI } from '../helpers';
 import path from 'path';
+import { ai } from '@zerostep/playwright';
 
 
 test('Question 2: Text table', async ({ page }) => {
@@ -128,5 +129,58 @@ test('Question 3: Resize uploaded image', async ({ page }) => {
   imageWidth = await createDocumentPage.image_width_textbox.inputValue();
   await expect(imageHeight).not.toContain('250')
   await expect(imageWidth).not.toContain('250')
+
+});
+
+
+//Below is the optional exercise which integrates AI to the automation. 
+//Currently it can only be run on chromium as AI is integrated with chromium only
+
+test('Question 3: Resize uploaded image using AI', async ({ page }) => {
+  // Get random credentials
+  const { username, password } = await getRandomCredentials();
+  const aiArgs = { page, test }
+
+  // Navigate to the login page
+  await navigateToLoginPage(page);
+
+
+  let loginPage = await LoginPage.getInstance(page)
+  // Pass the random username and password as parameters
+  await loginPage.loginToProposify(username, password);
+
+  const homePage = await HomePage.getInstance(page)
+  await expect(homePage.new_document_button).toBeVisible({ timeout: 10000 });
+
+  //  // Using AI to clicking on buttons
+  await ai('Click on New Document button', aiArgs)
+  await ai('Click on Try Editor 3.0 button', aiArgs)
+
+  await homePage.selectTemplate();
+
+  let createDocumentPage = await CreateDocumentPage.getInstance(page)
+  await createDocumentPage.uploadImage(filesDirectoryPath, 'Marvel.png')
+  await createDocumentPage.resizeImage('250', '250')
+
+  await ai('Click on button with lock icon', aiArgs)
+
+  let imageHeight = await createDocumentPage.image_height_textbox.inputValue();
+  let imageWidth = await createDocumentPage.image_width_textbox.inputValue();
+  expect(imageHeight).toContain('250')
+  expect(imageWidth).toContain('250')
+  let heightBoolean = await ai('Confirm the input value of Height textbox is 250', aiArgs)
+  let widthBoolean = await ai('Confirm the input value of Width textbox is 250', aiArgs)
+  expect(heightBoolean).toBe(true)
+  expect(widthBoolean).toBe(true)
+
+  await createDocumentPage.resizeImageByDragging();
+  imageHeight = await createDocumentPage.image_height_textbox.inputValue();
+  imageWidth = await createDocumentPage.image_width_textbox.inputValue();
+  expect(imageHeight).not.toContain('250')
+  expect(imageWidth).not.toContain('250')
+  heightBoolean = await ai('Confirm the input value of Height textbox is 250', aiArgs)
+  widthBoolean = await ai('Confirm the input value of Width textbox is 250', aiArgs)
+  expect(heightBoolean).toBe(false)
+  expect(widthBoolean).toBe(false)
 
 });
